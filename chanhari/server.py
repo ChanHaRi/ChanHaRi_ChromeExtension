@@ -205,7 +205,7 @@ def isNumber(s):
         return False
 
 
-def onIf(driver, xpath, contents, data, index, listFor):
+def onIf(driver, xpath, contents, data, index, listIf):
     # targetValue = driver.find_element_by_xpath(xpath).get_attribute("text")
     waitForElement(driver, xpath)
     targetValue = driver.find_element_by_xpath(xpath).text
@@ -252,7 +252,7 @@ def onIf(driver, xpath, contents, data, index, listFor):
     return 3
 
 
-def onElse(driver, xpath, contents, data, index, listFor):
+def onElse(driver, xpath, contents, data, index, listIf, determineIf):
     return 0
 
 
@@ -351,18 +351,59 @@ def runTask(data):
     try:
         result = ""
         determineIf = 0     # 0: 판별전    1: True     2: False
+        addrOfIfEnd = -1
+
         for index in range(len(data)):
             ### Action 수행
             if data[index]['command'] == "FOR":
                 result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index,listFor)
             elif data[index]['command'] == "IF":
-                determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listFor)
+                determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listIf)
+                if(determineIf == 1):   # True일 경우
+                    listIf[0].pop(0)
+                    addrOfIfEnd = -1
+                    print("계속진행")
+                    print(listIf)
+                elif(determineIf == 2):
+                    addrOfIfEnd = listIf[0][0].pop(2)
+                    listIf[0].pop(0)
+                    print("End로 진행")
+                    print(listIf)
             elif data[index]['command'] == "ELIF":
-                determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listFor)
+                if (determineIf == 1):  # True일 경우
+                    addrOfIfEnd = listIf[0][0].pop(2)
+                    listIf[0].pop(0)
+                    print("End로 진행")
+                    print(listIf)
+                elif (determineIf == 2):
+                    determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listIf)
+                    if (determineIf == 1):  # True일 경우
+                        listIf[0].pop(0)
+                        print("계속진행")
+                        print(listIf)
+                    elif (determineIf == 2):
+                        addrOfIfEnd = listIf[0][0].pop(2)
+                        listIf[0].pop(0)
+                        print("End로 진행")
+                        print(listIf)
+
             elif data[index]['command'] == "ELSE":
-                determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listFor)
+                commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listIf, determineIf)
+                if (determineIf == 1):  # True일 경우
+                    addrOfIfEnd = listIf[0][0].pop(2)
+                    listIf[0].pop(0)
+                    print("End로 진행")
+                    print(listIf)
+                elif (determineIf == 2):
+                    listIf[0].pop(0)
+                    print("계속 진행")
+                    print(listIf)
             else:
-                result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
+                if index == addrOfIfEnd:
+                    addrOfIfEnd = -1
+                if addrOfIfEnd == -1:
+                    result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
+
 
 
         print("endJool <<<<<<<<<<<<<<<<<<<<<<")
