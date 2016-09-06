@@ -280,14 +280,90 @@ commandFunc = {
 
 
 def runTask(data):
-    driver = webdriver.Chrome("chromedriver.exe")
+    driver = webdriver.Chrome("/Users/jool/PycharmProjects/ChanHaRi_ChromeExtension/chanhari/chromedriver")
     driver.maximize_window()
     print(data)
+
+    print("jool>>>>>>>>>>>")
+
+    # For list
+    listFor = []
+    isList = False
+
+    # If list
+    listIf = [[[]]]
+    dist = 0  # 판별 전: 0     참: 1    거짓: 2
+    isIf = False
+    isElse = False
+    ifCount = -1;
+    ifInnerCount = 0;
+
+    ### task1 pass-1        make list!
+    for index in range(len(data)):
+        tempCommand = data[index]['command']
+        if (tempCommand == "FOR"):
+            listFor.append([index, 0])
+            isList = True
+        elif (tempCommand == "IF"):
+            ifCount += 1
+            ifInnerCount = 0
+            listIf.append([])
+            listIf[ifCount].insert(ifInnerCount, ["IF", index, 0])
+            isIf = True
+        elif (tempCommand == "ELIF"):
+            ifInnerCount += 1
+            listIf[ifCount].insert(ifInnerCount, ["ELIF", index, 0])
+            isIf = True
+        elif (tempCommand == "ELSE"):
+            ifInnerCount += 1
+            listIf[ifCount].insert(ifInnerCount, ["ELSE", index, 0])
+            isElse = True
+
+        if ((tempCommand == "END") & (isList == True)):
+            isList = False
+            listFor[len(listFor) - 1][1] = index
+        elif ((tempCommand == "END") & (isIf == True)):
+            isIf = False
+            listIf[ifCount][ifInnerCount][2] = index
+        elif ((tempCommand == "END") & (isElse == True)):
+            isElse = False
+            listIf[ifCount][ifInnerCount][2] = index
+
+    print('list for >> ')
+    print(listFor)
+    print('list for << ')
+    print('list if >> ')
+    print(listIf)
+    print('list if << ')
+
+    ### Task pass-2
     try:
         for index in range(len(data)):
+            ### Action 수행
             result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
+
+            #TODO For문 수정하기
+            if data[index]['command'] == "FOR":
+                indexOfFor = int(data[index]['contents'][0])
+                curFor = listFor.pop(0)
+                addrOfFor = int(curFor[0])
+                addrOfForEnd = int(curFor[1])
+
+                for i in range(indexOfFor - 1):
+                    for j in range(addrOfFor + 1, addrOfForEnd):
+                        result = commandFunc.get(data[j]['command'])(driver, data[j]['xpath'], data[j]['contents'])
+
+            if data[index]['command'] == "IF":
+                if result:
+                    print("T")
+                elif not result:
+                    print("F")
+
+        print("endJool <<<<<<<<<<<<<<<<<<<<<<")
+
     except:
         return jsonify(resultCode=1)
+
 
 
 @app.route('/_analysis_json', methods=['GET', 'OPTIONS', 'POST'])
