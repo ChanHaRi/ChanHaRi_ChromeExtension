@@ -217,7 +217,7 @@ def onIf(driver, xpath, contents):
     if (isNumber(targetValue)):
         targetValue = float(targetValue)
 
-    if (contents[0] == "gt"):
+    if (contents[0] == ">"):
         if (targetValue > contents[1]):
             prePlaying = True
             isPlaying = True
@@ -226,7 +226,7 @@ def onIf(driver, xpath, contents):
             prePlaying = False
             isPlaying = False
             return False
-    if (contents[0] == "lt"):
+    if (contents[0] == "<"):
         if (targetValue < contents[1]):
             prePlaying = True
             isPlaying = True
@@ -235,7 +235,7 @@ def onIf(driver, xpath, contents):
             prePlaying = False
             isPlaying = False
             return False
-    if (contents[0] == "eq"):
+    if (contents[0] == "="):
         if (targetValue == contents[1]):
             prePlaying = True
             isPlaying = True
@@ -257,7 +257,16 @@ def onElse(driver, xpath, contents):
     return "OnElse"
 
 
-def onFor(driver, xpath, contents):
+def onFor(driver, xpath, contents, data, index, listFor):
+    indexOfFor = int(data[index]['contents'][0])
+    curFor = listFor.pop(0)
+    addrOfFor = int(curFor[0])
+    addrOfForEnd = int(curFor[1])
+
+    for i in range(indexOfFor - 1):
+        for j in range(addrOfFor + 1, addrOfForEnd):
+            result = commandFunc.get(data[j]['command'])(driver, data[j]['xpath'], data[j]['contents'])
+
     return "onFor"
 
 
@@ -338,26 +347,16 @@ def runTask(data):
 
     ### Task pass-2
     try:
+        result = ""
         for index in range(len(data)):
             ### Action 수행
-            result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
+            if (data[index]['command'] == "FOR"):
+                result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index,listFor)
+            elif (data[index]['command'] == "IF"):
+                result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
+            else:
+                result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
 
-            #TODO For문 수정하기
-            if data[index]['command'] == "FOR":
-                indexOfFor = int(data[index]['contents'][0])
-                curFor = listFor.pop(0)
-                addrOfFor = int(curFor[0])
-                addrOfForEnd = int(curFor[1])
-
-                for i in range(indexOfFor - 1):
-                    for j in range(addrOfFor + 1, addrOfForEnd):
-                        result = commandFunc.get(data[j]['command'])(driver, data[j]['xpath'], data[j]['contents'])
-
-            if data[index]['command'] == "IF":
-                if result:
-                    print("T")
-                elif not result:
-                    print("F")
 
         print("endJool <<<<<<<<<<<<<<<<<<<<<<")
 
