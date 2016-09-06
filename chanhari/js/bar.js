@@ -16,7 +16,7 @@
 
 /**
  * @author opensource@google.com
- * @license Apache License, Version 2.0.
+ * @license Apache License, Version 2.0.sddfsdfs
  */
 // Constants.
 var MOVE_COOLDOWN_PERIOD_MS = 400;
