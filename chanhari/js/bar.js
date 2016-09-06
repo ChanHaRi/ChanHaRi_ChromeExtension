@@ -34,7 +34,10 @@ var lastMoveTimeInMs = 0;
 //TODO Task 로직에 대해서
 var taskId = 0; //현재 진행하고 있는 TaskId
 var tasks = [];
-const taskKey = "TASK";
+//Chrome Storage Key
+const taskKey = "TASK"; // taskId
+const taskDate ="taskDate"; // Date per TaskID
+const taskLoopCount ="taskLoopCount"; // LoopCount per TASKID
 
 //TODO Task 페이지 관리
 
@@ -73,6 +76,13 @@ $(function () {
                 $("button.select_logic"+counter).remove();//무조건 다 지운다. 빈거이기 때문
                 $('select#select_extention1').val('Select Extention').change();//지우지못했어 css만 지웠음..
                 $('div#div_select1').hide();
+
+                $('input#schedule_date').val('');
+                $('input#loop_count').val('');
+                // objDate["data"]= $('input#schedule_date').val();
+                // objLoopCount["data"]= $('input#loop_count').val();
+
+
             }
 
         }
@@ -138,6 +148,32 @@ function loadInputData() {
         if (i < task.length)
             $("button#append").click();
     }
+    // //
+    // objDate["data"]= $('input#schedule_date').val();
+    // objLoopCount["data"]= $('input#loop_count').val();
+
+    //Date
+    var keyDate = (taskDate + taskId);
+    console.log("Chrome get------------------------------");
+    console.log(keyDate);
+    chrome.storage.sync.get(keyDate, function (item) {
+        if(item[keyDate]!= undefined) {
+            $('input#schedule_date').val(item[keyDate]);
+            console.log(item[keyDate]);
+        }
+    });
+
+    //LOOP Count
+    var keyLoopCount= (taskLoopCount + taskId);
+    console.log(keyLoopCount);
+    chrome.storage.sync.get(keyLoopCount, function (item) {
+        if(item[keyLoopCount]!=undefined) {
+            $('input#loop_count').val(item[keyLoopCount]);
+            console.log(item[keyLoopCount]);
+        }
+    })
+
+
 }
 
 
@@ -253,7 +289,7 @@ chrome.runtime.onMessage.addListener(handleRequest);
 function saveActionData() {
     // 객체 save 로직
     //TODO save 할때 모든 Task들에 대해서 값을 다시 가져와서 저장을 하도록
-
+    
 
     for (var counterId = 2; counterId<=counter ; counterId++) {
         var obj = {};
@@ -325,6 +361,28 @@ $(function () {
         counter+=1;
         saveActionData();
         counter-=1;
+        
+        //TODO date 저장
+
+        //save Date to Chrome storage
+        var objDate={};
+        objDate[("taskDate"+taskId)] = $('input#schedule_date').val();
+
+        chrome.storage.sync.set(objDate, function () {
+            console.log("Date Save is suc !");
+            console.log(objDate);
+        });
+
+        //save Loop Count to Chrome storage
+        var objLoopCount={};
+        objLoopCount[ ("taskLoopCount"+taskId)] = $('input#loop_count').val();
+
+        chrome.storage.sync.set(objLoopCount, function () {
+            console.log("Loop Count Save is suc !");
+            console.log(objLoopCount);
+        });
+
+        
     });
 });
 
@@ -374,7 +432,13 @@ $(function () {
         var sendData ={};
         sendData.taskId = taskId; //TaskId 추가
         sendData.actions = actions; //Task에 해당하는 actions 배열 전달.
-        console.log(actions);
+        sendData.scheduleDate= $('input#schedule_date').val();
+        var date = new Date(sendData.scheduleDate);
+
+        sendData.loopCount =$('input#loop_count').val();
+
+        console.log("=============send data to server==================");
+        console.log(sendData);
         $.ajax({
             type: "POST",
             url: "http://localhost:5000/_analysis_json",
