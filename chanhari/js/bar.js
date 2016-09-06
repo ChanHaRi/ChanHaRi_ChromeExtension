@@ -99,6 +99,7 @@ function saveStorage(key, data) {
 
     chrome.storage.sync.set(obj, function () {
         console.log("key = "+key+' , data = '+data+ " is suc !");
+        console.log(data);
     });
 }
 
@@ -366,7 +367,7 @@ $(function () {
         var sendData ={};
         sendData.taskId = taskId; //TaskId 추가
         sendData.actions = actions; //Task에 해당하는 actions 배열 전달.
-
+        console.log(actions);
         $.ajax({
             type: "POST",
             url: "http://localhost:5000/_analysis_json",
