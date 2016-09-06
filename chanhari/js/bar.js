@@ -100,6 +100,8 @@ function saveStorage(key, data) {
     chrome.storage.sync.set(obj, function () {
         console.log("key = "+key+' , data = '+data+ " is suc !");
         console.log(data);
+        
+//        jool
     });
 }
 
