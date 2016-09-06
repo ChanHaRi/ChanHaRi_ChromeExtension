@@ -15,13 +15,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from threading import Thread, Lock
 import threading
-import sys
+
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-isPlaying = False
-prePlaying = False
 
 taskThreadList = []
 """
@@ -208,53 +205,55 @@ def isNumber(s):
         return False
 
 
-def onIf(driver, xpath, contents):
+def onIf(driver, xpath, contents, data, index, listFor):
     # targetValue = driver.find_element_by_xpath(xpath).get_attribute("text")
     waitForElement(driver, xpath)
     targetValue = driver.find_element_by_xpath(xpath).text
     targetValue = targetValue.strip()
+    if(contents[0][0:1] == "!="):
+        contentsValue = contents[0][2:]
+    else:
+        contentsValue = contents[0][1:]
 
     if (isNumber(targetValue)):
         targetValue = float(targetValue)
+    if (isNumber(contentsValue)):
+        contentsValue = float(contentsValue)
 
-    if (contents[0] == ">"):
-        if (targetValue > contents[1]):
-            prePlaying = True
-            isPlaying = True
-            return True
+    if (contents[0][0] == ">"):
+        if (targetValue > contentsValue):
+            print(">>>>>>>>>>> true")
+            return 1
         else:
-            prePlaying = False
-            isPlaying = False
-            return False
-    if (contents[0] == "<"):
-        if (targetValue < contents[1]):
-            prePlaying = True
-            isPlaying = True
-            return True
+            print(">>>>>>>>>>> false")
+            return 2
+    elif (contents[0][0] == "<"):
+        if (targetValue < contentsValue):
+            print("<<<<<<<<<<< true")
+            return 1
         else:
-            prePlaying = False
-            isPlaying = False
-            return False
-    if (contents[0] == "="):
-        if (targetValue == contents[1]):
-            prePlaying = True
-            isPlaying = True
-            return True
+            print("<<<<<<<<<<< false")
+            return 2
+    elif (contents[0][0] == "="):
+        if (targetValue == contentsValue):
+            print("========== true")
+            return 1
         else:
-            prePlaying = False
-            isPlaying = False
-            return False
+            print("========== false")
+            return 2
+    elif (contents[0][0:2] == "!="):
+        if (targetValue != contentsValue):
+            print("!=!=!=!=!=!= true")
+            return 1
+        else:
+            print("!=!=!=!=!=!= false")
+            return 2
 
-    return False
+    return 3
 
 
-def onElse(driver, xpath, contents):
-    if (prePlaying):
-        isPlaying = False
-    else:
-        isPlaying = True
-
-    return "OnElse"
+def onElse(driver, xpath, contents, data, index, listFor):
+    return 0
 
 
 def onFor(driver, xpath, contents, data, index, listFor):
@@ -271,7 +270,6 @@ def onFor(driver, xpath, contents, data, index, listFor):
 
 
 def onEnd(driver, xpath, contents):
-    isPlaying = True
     return "onEnd"
 
 
@@ -289,7 +287,12 @@ commandFunc = {
 
 
 def runTask(data):
-    driver = webdriver.Chrome("/Users/jool/PycharmProjects/ChanHaRi_ChromeExtension/chanhari/chromedriver")
+    #TODO   Windows, UNIX 계열이외에 예외처리 필요
+    if os.name == "posix":      # OS가 Unix계열일 경우 (MacOS 포함)
+        driver = webdriver.Chrome(os.getcwd() + "/chromedriver")
+    else:                       # OS가 windows일 경우
+        driver = webdriver.Chrome("chromedriver.exe")
+
     driver.maximize_window()
     print(data)
 
@@ -301,7 +304,6 @@ def runTask(data):
 
     # If list
     listIf = [[[]]]
-    dist = 0  # 판별 전: 0     참: 1    거짓: 2
     isIf = False
     isElse = False
     ifCount = -1;
@@ -348,12 +350,17 @@ def runTask(data):
     ### Task pass-2
     try:
         result = ""
+        determineIf = 0     # 0: 판별전    1: True     2: False
         for index in range(len(data)):
             ### Action 수행
-            if (data[index]['command'] == "FOR"):
+            if data[index]['command'] == "FOR":
                 result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index,listFor)
-            elif (data[index]['command'] == "IF"):
-                result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
+            elif data[index]['command'] == "IF":
+                determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listFor)
+            elif data[index]['command'] == "ELIF":
+                determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listFor)
+            elif data[index]['command'] == "ELSE":
+                determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listFor)
             else:
                 result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
 
@@ -369,8 +376,6 @@ def runTask(data):
 @cross_origin()
 def analysis_json():
     print("[analysis_json]")
-
-    isPlaying = True
 
     # data = json.dumps({})
     ###open local json file
