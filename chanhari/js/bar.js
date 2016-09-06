@@ -553,8 +553,7 @@ $(function () {
                 "</div>" +
                 "</div>");
 
-            //TODO el 지워도 되는 것같다.
-            $el = $(addHTML).appendTo($(".defaultaction:last").parent()).trigger("create");
+            $(addHTML).appendTo($(".defaultaction:last").parent()).trigger("create");
 
             addQuery();
 
