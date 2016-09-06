@@ -259,6 +259,13 @@ xh.Bar.prototype.handleRequest_ = function(request, sender, cb) {
   } else if (request.type === 'toggleBar') {
     this.toggleBar_();
   }
+  if (request.type === 'getURL') {
+
+        chrome.runtime.sendMessage({
+        type: 'receiveURL',
+        results: request.results
+      });
+   }
 };
 
 xh.Bar.prototype.mouseMove_ = function(e) {

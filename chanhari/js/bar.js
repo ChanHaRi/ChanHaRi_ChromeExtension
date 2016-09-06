@@ -247,6 +247,10 @@ var handleRequest = function(request, sender, cb) {
             $nodeCountText.nodeValue = request.results[1];
         }
     }
+    if(request.type === 'receiveURL'){
+        console.log(request.result)
+    }
+    console.log(request)
 };
 
 var handleMouseMove = function (e) {
@@ -414,8 +418,20 @@ $(function () {
             obj.contents = [];
 
             if (obj.command == "CRAWLING") {
-                obj.contents.push(temp[i].selectExtention);
-                obj.contents.push(temp[i].inputText);
+
+                obj.contents.push(temp[i].selectExtention); //contents[0] : png, json, ..
+                obj.contents.push(temp[i].inputText);   //contents[1] : saveAsName
+                if(temp[i].selectExtention == "VIDEO"){
+                    console.log("[VIDEO]")
+                    console.log(documnet.referrer)
+                    console.log(document.referrer.length)
+                    if(document.referrer.length > 3){
+                        obj.contents.push(document.referrer)    //contents[2] : videoUrl
+                    }
+                    else{
+                        obj.contents.push(temp[0].inputText)    //contents[2]
+                    }
+                }
             }
             else {
                 obj.contents.push(temp[i].inputText);
@@ -488,7 +504,13 @@ $(function () {
             var opt = target.val();
             console.log("selected opt = " + opt);
             $("button.select_logic"+gnCounter).remove();//이전에 모든거지우고 새로추가
-            
+
+            if(opt == 'URL'){
+                chrome.runtime.sendMessage({type: 'getURL', results: ' '});
+
+                console.log("prev url : " + document.referrer);
+                $('input#input_text' + gnCounter).val(document.referrer);
+            }
             if (opt == 'CRAWLING') {
                 $('#div_select'+gnCounter).show();
                 // var apphtml = $(
@@ -607,6 +629,7 @@ $(function () {
                 "<option value='PICKLE'>PICKLE</option>"+
                 "<option value='JSON'>JSON</option>"+
                 "<option value='PDF'>PDF</option>"+
+                "<option value='VIDEO'>VIDEO</option>"+
                 "</select>"+
                 "</div>" +
                 "<div data-role='ui-field-contain ui-block-b' >" +

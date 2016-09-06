@@ -19,8 +19,18 @@
  * @license Apache License, Version 2.0.
  */
 
+var tablink = 'defaultURL';
+chrome.tabs.query({'currentWindow': true,'active': true}, function (tabs) {
+    tablink = tabs[0].url;
+});
 function handleRequest(request, sender, cb) {
   // Simply relay the request. This lets content.js talk to bar.js.
+   if (request.type === 'getURL') {
+         chrome.tabs.executeScript({
+        code: 'document.body.style.backgroundColor="red"'
+      });
+        request.results = tablink;
+   }
   chrome.tabs.sendMessage(sender.tab.id, request, cb);
 }
 chrome.runtime.onMessage.addListener(handleRequest);
@@ -28,3 +38,6 @@ chrome.runtime.onMessage.addListener(handleRequest);
 chrome.browserAction.onClicked.addListener(function(tab) {
   chrome.tabs.sendMessage(tab.id, {type: 'toggleBar'});
 });
+//chrome.tab.getCurrent(function(tab)){
+//    console.log(tab.url);
+//}

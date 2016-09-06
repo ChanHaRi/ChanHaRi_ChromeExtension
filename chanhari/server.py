@@ -33,7 +33,6 @@ class taskThread(threading.Thread):
 
 """
 
-
 def fullpage_screenshot(driver, file):
     print("Starting chrome full page screenshot workaround ...")
 
@@ -187,12 +186,18 @@ def onCrawling(driver, xpath, contents):
         waitForElement(driver, imagePath)
         element = driver.find_element_by_xpath(imagePath)
         drawImage(driver, element, contents[1])
+
     elif (contents[0] == "PDF"):
         waitForElement(driver, imagePath)
         element = driver.find_element_by_xpath(imagePath)
         canv = canvas.Canvas(contents[1], pagesize=A4)
         drawCanvas(driver, element, contents[1], canv)
         canv.save()
+
+    elif(contents[0] == "VIDEO"):
+        videoUrl = contents[2]
+        yougetCommand = 'chcp 65001 && you-get ' + videoUrl
+        os.system(yougetCommand)
 
     return "onCrawling"
 
