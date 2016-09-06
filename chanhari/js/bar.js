@@ -253,29 +253,36 @@ chrome.runtime.onMessage.addListener(handleRequest);
 
 function saveActionData() {
     // 객체 save 로직
-    var obj = {};
+    //TODO save 할때 모든 Task들에 대해서 값을 다시 가져와서 저장을 하도록
 
-    obj.selectCommand = $('select#select_command' + (counter - 1)).val();
 
-    if (obj.selectCommand == "Select commands") {
-        alert('Select Commands !')
-        return;
+    for (var counterId = 2; counterId<=counter ; counterId++) {
+        var obj = {};
+
+        obj.selectCommand = $('select#select_command' + (counterId - 1)).val();
+
+        if (obj.selectCommand == "Select commands") {
+            alert('Select Commands !')
+            return;
+        }
+        else if (obj.selectCommand == 'CRAWLING')//CRAWLING 선택될 경우
+            obj.selectExtention = $('select#select_extention' + (counterId - 1)).val();
+
+        obj.xPath = $('input#x_path' + (counterId - 1)).val();
+        obj.inputText = $('input#input_text' + (counterId - 1)).val();
+
+        try {
+            tasks[taskId][counterId - 2] = obj;
+            console.log(tasks[taskId][counterId - 2]);
+        }
+        catch (err) {
+            //초기화 안된경우에 처리해줘야한다.
+            tasks[taskId] = [];
+            tasks[taskId][counter - 2] = obj;
+        }
     }
-    else if (obj.selectCommand == 'CRAWLING')//CRAWLING 선택될 경우
-        obj.selectExtention = $('select#select_extention' + (counter - 1)).val();
-
-    obj.xPath = $('input#x_path' + (counter - 1)).val();
-    obj.inputText = $('input#input_text' + (counter - 1)).val();
-
-    try {
-        tasks[taskId][counter - 2] = obj;
-    }
-    catch (err) {
-        //초기화 안된경우에 처리해줘야한다.
-        tasks[taskId] = [];
-        tasks[taskId][counter - 2] = obj;
-    }
-
+    console.log("save actions tasks : "+taskId);
+    console.log(tasks[taskId]);
     saveStorage((taskKey + taskId), tasks[taskId]);
 }
 
