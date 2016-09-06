@@ -38,7 +38,6 @@ const taskKey = "TASK";
 
 //TODO Task 페이지 관리
 
-
 $(function () {
     $('a.taskSelectFunction').bind('click', function () {
 
