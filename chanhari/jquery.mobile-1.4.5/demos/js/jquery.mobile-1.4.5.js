@@ -7549,7 +7549,7 @@ $.widget( "mobile.listview", $.extend( {
 		// Check if a start attribute has been set while taking a value of 0 into account
 		if ( ol && ( start || start === 0 ) ) {
 			startCount = parseInt( start, 10 ) - 1;
-			$list.css( "counter-reset", "listnumbering " + startCount );
+			$list.css( "gnCounter-reset", "listnumbering " + startCount );
 		}
 
 		this._beforeListviewRefresh();
@@ -7613,7 +7613,7 @@ $.widget( "mobile.listview", $.extend( {
 				if ( ol && value ) {
 					newStartCount = parseInt( value , 10 ) - 1;
 
-					item.css( "counter-reset", "listnumbering " + newStartCount );
+					item.css( "gnCounter-reset", "listnumbering " + newStartCount );
 				}
 			}
 
@@ -10071,7 +10071,7 @@ $.widget( "mobile.selectmenu", $.extend( {
 			button.addClass( "ui-select-nativeonly" );
 		}
 
-		// Add counter for multi selects
+		// Add gnCounter for multi selects
 		if ( this.isMultiple ) {
 			this.buttonCount = $( "<span>" )
 				.addClass( "ui-li-count ui-body-inherit" )

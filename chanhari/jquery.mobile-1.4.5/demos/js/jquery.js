@@ -395,7 +395,7 @@ jQuery.extend({
 	// Is the DOM ready to be used? Set to true once it occurs.
 	isReady: false,
 
-	// A counter to track how many items to wait for before
+	// A gnCounter to track how many items to wait for before
 	// the ready event fires. See #6781
 	readyWait: 1,
 
@@ -801,7 +801,7 @@ jQuery.extend({
 		return core_concat.apply( [], ret );
 	},
 
-	// A global GUID counter for objects
+	// A global GUID gnCounter for objects
 	guid: 1,
 
 	// Bind a function to a context, optionally partially applying any
@@ -2706,7 +2706,7 @@ function matcherFromTokens( tokens ) {
 }
 
 function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
-	// A counter to specify which element is currently being matched
+	// A gnCounter to specify which element is currently being matched
 	var matcherCachedRuns = 0,
 		bySet = setMatchers.length > 0,
 		byElement = elementMatchers.length > 0,
@@ -8251,7 +8251,7 @@ jQuery.extend({
 
 			if ( fireGlobals ) {
 				globalEventContext.trigger( "ajaxComplete", [ jqXHR, s ] );
-				// Handle the global AJAX counter
+				// Handle the global AJAX gnCounter
 				if ( !( --jQuery.active ) ) {
 					jQuery.event.trigger("ajaxStop");
 				}

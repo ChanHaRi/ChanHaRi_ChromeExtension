@@ -343,7 +343,7 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 						'border-right border-bottom border-left border-top-color border-right-color border-bottom-color border-left-color ' +
 						'border-top-style border-right-style border-bottom-style border-left-style border-top-width border-right-width ' +
 						'border-bottom-width border-left-width border-width border bottom cap-height caption-side centerline clear clip color ' +
-						'content counter-increment counter-reset cue-after cue-before cue cursor definition-src descent direction display ' +
+						'content gnCounter-increment gnCounter-reset cue-after cue-before cue cursor definition-src descent direction display ' +
 						'elevation empty-cells float font-size-adjust font-family font-size font-stretch font-style font-variant font-weight font ' +
 						'height left letter-spacing line-height list-style-image list-style-position list-style-type list-style margin-top ' +
 						'margin-right margin-bottom margin-left margin marker-offset marks mathline max-height max-width min-height min-width opacity orphans ' +
@@ -355,7 +355,7 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 
 		var values =	'above absolute all always aqua armenian attr aural auto avoid baseline behind below bidi-override black blink block blue bold bolder '+
 						'both bottom braille capitalize caption center center-left center-right circle close-quote code collapse compact condensed '+
-						'continuous counter counters crop cross crosshair cursive dashed decimal decimal-leading-zero default digits disc dotted double '+
+						'continuous gnCounter counters crop cross crosshair cursive dashed decimal decimal-leading-zero default digits disc dotted double '+
 						'embed embossed e-resize expanded extra-condensed extra-expanded fantasy far-left far-right fast faster fixed format fuchsia '+
 						'gray green groove handheld hebrew help hidden hide high higher icon inline-table inline inset inside invert italic '+
 						'justify landscape large larger left-side left leftwards level lighter lime line-through list-item local loud lower-alpha '+
