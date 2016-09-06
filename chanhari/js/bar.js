@@ -74,7 +74,6 @@ $(function () {
                 $("button.select_logic"+counter).remove();//무조건 다 지운다. 빈거이기 때문
                 $('select#select_extention1').val('Select Extention').change();//지우지못했어 css만 지웠음..
                 $('div#div_select1').hide();
-
             }
 
         }
@@ -152,9 +151,39 @@ $(function () {
         chrome.storage.sync.remove((taskKey+taskId),function()
         {
             alert("Chrome Storage remove : "+(taskKey+taskId));
+
+            //TODO 새로 지우고 다시 update를 해야한다.
+            while (counter>1) {
+
+                queryEl[counter - 1].removeEventListener('keyup', evaluateQuery);
+                queryEl[counter - 1].removeEventListener('mouseup', evaluateQuery);
+
+                queryEl.pop();
+                resultsEl.pop();
+
+                $("div#form" + (counter)).remove();
+                $("br:last").remove();
+                counter--;
+            }
+            //counter가 0이되면서 모든게 지워지고
+
+            //TODO 새로 그리기 //바뀌어진 아이디로 그리면된다.
+
+            if(!loadStorage())//비여있다면 하나 넣어줘야한다.
+            {
+                $('input#x_path1').val('');
+                $('input#input_text1').val('');
+
+                $('select#select_command1').val('Select commands').change();
+                $("button.select_logic"+counter).remove();//무조건 다 지운다. 빈거이기 때문
+                $('select#select_extention1').val('Select Extention').change();//지우지못했어 css만 지웠음..
+                $('div#div_select1').hide();
+            }
+
         });
 
-        location.reload();
+
+
     });
 });
 
@@ -225,12 +254,17 @@ function saveActionData() {
     // 객체 save 로직
     var obj = {};
 
-    obj.xPath = $('input#x_path' + (counter - 1)).val();
-    obj.inputText = $('input#input_text' + (counter - 1)).val();
     obj.selectCommand = $('select#select_command' + (counter - 1)).val();
 
-    if (obj.selectCommand == 'CRAWLING')//CRAWLING 선택될 경우
+    if (obj.selectCommand == "Select commands") {
+        alert('Select Commands !')
+        return;
+    }
+    else if (obj.selectCommand == 'CRAWLING')//CRAWLING 선택될 경우
         obj.selectExtention = $('select#select_extention' + (counter - 1)).val();
+
+    obj.xPath = $('input#x_path' + (counter - 1)).val();
+    obj.inputText = $('input#input_text' + (counter - 1)).val();
 
     try {
         tasks[taskId][counter - 2] = obj;
