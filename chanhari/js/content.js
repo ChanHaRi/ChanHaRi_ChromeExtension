@@ -266,6 +266,20 @@ xh.Bar.prototype.handleRequest_ = function(request, sender, cb) {
   } else if (request.type === 'toggleBar') {
     this.toggleBar_();
   }
+
+
+   if(request.type === 'leftMove'){
+      this.barFrame_.classList.remove('right');
+      this.barFrame_.classList.add('left');
+
+   }
+
+   if(request.type === 'rightMove'){
+      this.barFrame_.classList.remove('left');
+      this.barFrame_.classList.add('right');
+   }
+
+
   if (request.type === 'getURL') {
 
         chrome.runtime.sendMessage({
@@ -273,20 +287,7 @@ xh.Bar.prototype.handleRequest_ = function(request, sender, cb) {
         results: request.results
       });
    }
-   if (request.type === 'leftMove') {
 
-        chrome.runtime.sendMessage({
-        type: 'receiveLeftMove',
-        results: request.results
-      });
-   }
-   if (request.type === 'rightMove') {
-
-        chrome.runtime.sendMessage({
-        type: 'receiveRightMove',
-        results: request.results
-      });
-   }
 };
 
 xh.Bar.prototype.mouseMove_ = function(e) {

@@ -23,8 +23,8 @@
   border-width: 0 !important;
   position: fixed !important;
   top: 0 !important;
-  right: 0 ;
-  left: auto ;
+  left: auto !important;
+  right: 0 !important;
   width: 35% !important;
   height: 1000px !important;  /* bar.css body height */
   z-index: 2147483647 !important;
@@ -35,6 +35,16 @@
 #xh-bar.bottom {
   top: auto !important;
   bottom: 0 !important;
+}
+
+#xh-bar.left {
+    left: 0 !important;
+    right: auto !important;
+}
+
+#xh-bar.right {
+    left: auto !important;
+    right: 0 !important;
 }
 
 #xh-bar.hidden {
