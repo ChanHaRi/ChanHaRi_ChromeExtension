@@ -37,12 +37,10 @@ function handleRequest(request, sender, cb) {
         request.results = sender.tab;
    }
    if(request.type === 'leftMove'){
-        request.results = sender.tab;
-        //chrome.tabs.insertCSS(sender.tab.id,{code: cssLeft, allFrames: true});
+        chrome.tabs.insertCSS(code: cssLeft, allFrames: true});
    }
    if(request.type === 'rightMove'){
-        request.results = sender.tab;
-        //chrome.tabs.insertCSS(sender.tab.id,{code: cssRight, allFrames: true});
+        chrome.tabs.insertCSS({code: cssRight, allFrames: true});
    }
 
   chrome.tabs.sendMessage(sender.tab.id, request, cb);
