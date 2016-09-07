@@ -16,10 +16,42 @@ from selenium.webdriver.common.by import By
 from threading import Thread, Lock
 import threading
 
+import dateutil.parser
+
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 taskThreadList = []
+
+#TODO Seongha Schduler
+
+def runTaskThread(curTaskId,runTask,curActions,date):
+    #TODO date를 가지고 python에서 스케줄을 조절
+
+    taskThread = Thread(name=curTaskId, target=runTask, args=[curActions])
+    taskThreadList.append(taskThread)
+    taskThread.start()
+
+def createSchtasks(curTaskId,date):
+    #schtasks /create /tn test /sc minute /mo 1 /tr "calc" //os.system 으로 실행하면 될것임.
+    #MS Sch에 관한 것이다.
+    #단순히 컴퓨터 켜질때 마다 실행이되도록 create를 하자.
+    #아니면 그냥 시작프로그램쪽으로 경로를 바꿔 버리는 방법도있음
+    print("curTaskId 스케줄 등록 ")
+
+#새로운 요청을 만들고 그 요청에 대해서 처리를 하는 함수다.
+def deleteSchtasks(curTaskId):
+    #MS Sch에 관한 것이다.
+    #단순히 컴퓨터 켜질때 마다 실행이되도록 create를 하자.
+    #아니면 그냥 시작프로그램쪽으로 경로를 바꿔 버리는 방법도있음
+    print("curTaskId MS 스케줄에서 제거를 한다. ")
+
+
+
+
+
+#TODO--------------------------------------
+
 
 def fullpage_screenshot(driver, file):
     print("Starting chrome full page screenshot workaround ...")
@@ -424,16 +456,33 @@ def analysis_json():
         print(data)
         curTaskId = data["taskId"]
         curActions = data["actions"]
+        curDate = data["scheduleDate"]    # 'scheduleDate' 부분추가
+
     except:
         return jsonify(resultCode=1)
 
-    taskThread = Thread(name=curTaskId, target=runTask, args=[curActions])
-    taskThreadList.append(taskThread)
-    taskThread.start()
+
+    # TODO JSON 저장
+    with open('data'+curTaskId+'.json', 'w') as f:
+        json.dump(data, f) #저정된 데이터는 다른 python 에서 실행이된다.
+
+    # TODO Date 파싱
+    #curDate 파싱해야한다.
+    parsedDate = dateutil.parser.parse(curDate) #파싱된 datetime obj
+
+    # TODO 함수로
+    # 이 부분에서 스케줄 등록하는 부분을 만들도록하자.
+    # taskId
+    createSchtasks(curTaskId.parsedDate)
+
+    # TODO 함수로 변경 파라미터 이것만있으면 됨?
+    runTaskThread(curTaskId,runTask,curActions,curTaskId.parsedDate) # 이 함수는 오직 쓰레드만 돌리면 된다.
+
+    # TODO Delete Create json에 data가 추가가 되어야 한다.
 
     time.sleep(5)
     print("[End : analysis_json]")
-    return jsonify(resultCode=1, taskId=taskThread.getName())
+    return jsonify(resultCode=1, taskId=curTaskId)
 
 @app.route('/')
 def index():
