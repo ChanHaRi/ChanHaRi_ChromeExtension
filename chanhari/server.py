@@ -476,7 +476,9 @@ def analysis_json():
     print("22222222")
     # TODO Date 파싱
     #curDate 파싱해야한다.
-    if(curTaskIsSchedule=="1"):
+
+
+    if (curTaskIsSchedule == "1"):
         try:
             print("Schedule Run")
             print(curDate)
@@ -487,13 +489,15 @@ def analysis_json():
             scheduleTime = str(parsedDate.hour) + ":" + str(parsedDate.minute)
             print(scheduleTime)
             schedule.every().day.at(scheduleTime).do(runTask,[data])
-            #schedule.every().second.do(runTask,[data])
-
         except:
-            print("Immediately Run")
-            taskThread = Thread(name=curTaskId, target=runTask, args=[data])
-            taskThreadList.append(taskThread)
-            taskThread.start()
+            return jsonify(resultCode=0, taskId=curTaskId)
+
+    else:
+        print("Immediately Run")
+        taskThread = Thread(name=curTaskId, target=runTask, args=[data])
+        taskThreadList.append(taskThread)
+        taskThread.start()
+
 
 
 
