@@ -18,19 +18,33 @@
  * @author opensource@google.com
  * @license Apache License, Version 2.0.
  */
-
+var tabId;
 var tablink = 'defaultURL';
+var tab;
+
 chrome.tabs.query({'currentWindow': true,'active': true}, function (tabs) {
+    tab = tabs[0];
+    tabId = tabs[0].id;
     tablink = tabs[0].url;
 });
+
+var cssLeft = "#xh-bar{ left:0; right:auto}";
+var cssRight = "xh-bar{right:0; left:auto}";
 function handleRequest(request, sender, cb) {
   // Simply relay the request. This lets content.js talk to bar.js.
+     //chrome.tabs.insertCSS({code: css, allFrames: true});
    if (request.type === 'getURL') {
-         chrome.tabs.executeScript({
-        code: 'document.body.style.backgroundColor="red"'
-      });
-        request.results = tablink;
+        request.results = sender.tab;
    }
+   if(request.type === 'leftMove'){
+        request.results = sender.tab;
+        //chrome.tabs.insertCSS(sender.tab.id,{code: cssLeft, allFrames: true});
+   }
+   if(request.type === 'rightMove'){
+        request.results = sender.tab;
+        //chrome.tabs.insertCSS(sender.tab.id,{code: cssRight, allFrames: true});
+   }
+
   chrome.tabs.sendMessage(sender.tab.id, request, cb);
 }
 chrome.runtime.onMessage.addListener(handleRequest);

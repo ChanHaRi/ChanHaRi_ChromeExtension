@@ -266,6 +266,20 @@ xh.Bar.prototype.handleRequest_ = function(request, sender, cb) {
         results: request.results
       });
    }
+   if (request.type === 'leftMove') {
+
+        chrome.runtime.sendMessage({
+        type: 'receiveLeftMove',
+        results: request.results
+      });
+   }
+   if (request.type === 'rightMove') {
+
+        chrome.runtime.sendMessage({
+        type: 'receiveRightMove',
+        results: request.results
+      });
+   }
 };
 
 xh.Bar.prototype.mouseMove_ = function(e) {

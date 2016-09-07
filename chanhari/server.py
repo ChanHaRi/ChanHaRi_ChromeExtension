@@ -196,7 +196,11 @@ def onCrawling(driver, xpath, contents):
 
     elif(contents[0] == "VIDEO"):
         videoUrl = contents[2]
-        yougetCommand = 'chcp 65001 && you-get ' + videoUrl
+        yougetCommand = '';
+        if os.name == "posix":  # OS가 Unix계열일 경우 (MacOS 포함)
+            yougetCommand = 'LC_CTYPE=en_US.UTF-8 && you-get ' + videoUrl
+        else:  # OS가 windows일 경우
+            yougetCommand = 'chcp 65001 && you-get ' + videoUrl
         os.system(yougetCommand)
 
     return "onCrawling"

@@ -248,7 +248,10 @@ var handleRequest = function(request, sender, cb) {
         }
     }
     if(request.type === 'receiveURL'){
-        console.log(request.result)
+        console.log(request.results)
+        $('input#input_text' + gnCounter).val(request.results.url);
+        //console.log("prev url : " + document.referrer);
+        //$('input#input_text' + gnCounter).val(document.referrer);
     }
     console.log(request)
 };
@@ -387,6 +390,17 @@ $(function () {
     });
 });
 
+$(function () {
+    $('button#left').bind('click', function () {
+            chrome.runtime.sendMessage({type: 'leftMove', results: ' '});
+    });
+});
+$(function () {
+    $('button#right').bind('click', function () {
+            chrome.runtime.sendMessage({type: 'rightMove', results: ' '});
+    });
+});
+
 
 $(function () {
     $('button#run').bind('click', function () {
@@ -423,14 +437,7 @@ $(function () {
                 obj.contents.push(temp[i].inputText);   //contents[1] : saveAsName
                 if(temp[i].selectExtention == "VIDEO"){
                     console.log("[VIDEO]")
-                    console.log(documnet.referrer)
-                    console.log(document.referrer.length)
-                    if(document.referrer.length > 3){
-                        obj.contents.push(document.referrer)    //contents[2] : videoUrl
-                    }
-                    else{
-                        obj.contents.push(temp[0].inputText)    //contents[2]
-                    }
+                     obj.contents.push(temp[0].inputText)    //contents[2] : videoUrl
                 }
             }
             else {
@@ -508,8 +515,6 @@ $(function () {
             if(opt == 'URL'){
                 chrome.runtime.sendMessage({type: 'getURL', results: ' '});
 
-                console.log("prev url : " + document.referrer);
-                $('input#input_text' + gnCounter).val(document.referrer);
             }
             if (opt == 'CRAWLING') {
                 $('#div_select'+gnCounter).show();
