@@ -478,7 +478,7 @@ def analysis_json():
     #curDate 파싱해야한다.
 
 
-    if (curTaskIsSchedule == "1"):
+    if (curTaskIsSchedule == 1):
         try:
             print("Schedule Run")
             print(curDate)
@@ -490,6 +490,7 @@ def analysis_json():
             print(scheduleTime)
             schedule.every().day.at(scheduleTime).do(runTask,[data])
         except:
+            print("schedule except")
             return jsonify(resultCode=0, taskId=curTaskId)
 
     else:
