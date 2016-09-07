@@ -471,25 +471,36 @@ $(function () {
             actions.push(obj);
         }
         console.log(actions);
-        alert("Run macro id <" + (gnTaskId) + ">");
+
+
 
         var sendData ={};
         sendData.taskId = gnTaskId; //TaskId 추가
         sendData.actions = actions; //Task에 해당하는 actions 배열 전달.
         sendData.scheduleDate= $('input#schedule_date').val();
-        var date = new Date(sendData.scheduleDate);
 
-        if($('input#loop_count').val() == ' ')
+        sendData.isSchedule = $('select#is_schedule').val();
+
+        if(sendData.isSchedule=="1" && sendData.scheduleDate ==''){
+            alert("Run Fail Select Date!")
+            return;
+        }
+
+
+        if($('input#loop_count').val() == '')
         {
             sendData.loopCount = 1;
         }
         else{
             sendData.loopCount =$('input#loop_count').val();
         }
-        sendData.isSchedule = $('select#is_schedule').val();
+
+
 
         console.log("=============send data to server==================");
         console.log(sendData);
+
+        alert("Run macro id <" + (gnTaskId) + ">");
         $.ajax({
             type: "POST",
             url: "http://localhost:5000/_analysis_json",
