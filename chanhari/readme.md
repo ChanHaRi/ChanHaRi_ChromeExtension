@@ -1,6 +1,17 @@
 [ChanHaRi Extension]
 
-default : background.html / background.js
+[Shortcut]
+Ctrl+Shift+Z : ChanHaRi Extension on/off (background)
+Ctrl+Shift+1 : task1
+Ctrl+Shift+2 : task2
+Ctrl+Shift+3 : task3
+Ctrl+Shift+4 : task4
+Ctrl+Shift+5 : task5
+Ctrl+Shift+6 : ChanHaRi Extension on/off (chrome)
+Ctrl+Shift+A : Run current task
+
+[Code]
+Default : background.html / background.js
 1. extension icon 클릭시 background.js 핸들러 동작하여 bar.html를 띄움
 2. bar.js에서 동적으로 웹페이지상의 html코드 내에 bar.html 코드를 삽입.
 

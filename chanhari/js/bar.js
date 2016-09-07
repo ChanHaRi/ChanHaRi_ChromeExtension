@@ -24,6 +24,7 @@
  * j : json
  */
 // Constants.
+
 var MOVE_COOLDOWN_PERIOD_MS = 400;
 var X_KEYCODE = 88;
 
@@ -252,6 +253,24 @@ var handleRequest = function(request, sender, cb) {
         $('input#input_text' + gnCounter).val(request.results.url);
         //console.log("prev url : " + document.referrer);
         //$('input#input_text' + gnCounter).val(document.referrer);
+    }
+    if(request.type === 'executeTask1'){
+        $('a.taskSelectFunction#0').click();
+    }
+    if(request.type === 'executeTask2'){
+        $('a.taskSelectFunction#1').click();
+    }
+    if(request.type === 'executeTask3'){
+        $('a.taskSelectFunction#2').click();
+    }
+    if(request.type === 'executeTask4'){
+        $('a.taskSelectFunction#3').click();
+    }
+    if(request.type === 'executeTask5'){
+        $('a.taskSelectFunction#settings').click();
+    }
+    if(request.type === 'runTask'){
+        $('button#run').click();
     }
     console.log(request)
 };

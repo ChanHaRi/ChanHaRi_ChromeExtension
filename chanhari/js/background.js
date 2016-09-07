@@ -22,6 +22,10 @@ var tabId;
 var tablink = 'defaultURL';
 var tab;
 
+chrome.commands.onCommand.addListener(function(command) {
+        console.log('Command:', command);
+});
+
 chrome.tabs.query({'currentWindow': true,'active': true}, function (tabs) {
     tab = tabs[0];
     tabId = tabs[0].id;

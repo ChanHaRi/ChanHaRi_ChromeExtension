@@ -50,6 +50,13 @@ var xh = xh || {};
 
 xh.SHIFT_KEYCODE = 16;
 xh.X_KEYCODE = 88;
+xh.KEYCODE_1 = 49;
+xh.KEYCODE_2 = 50;
+xh.KEYCODE_3 = 51;
+xh.KEYCODE_4 = 52;
+xh.KEYCODE_5 = 53;
+xh.KEYCODE_A = 65;
+xh.KEYCODE_Z = 90;
 
 xh.elementsShareFamily = function(primaryEl, siblingEl) {
   var p = primaryEl, s = siblingEl;
@@ -295,9 +302,41 @@ xh.Bar.prototype.mouseMove_ = function(e) {
 xh.Bar.prototype.keyDown_ = function(e) {
   var ctrlKey = e.ctrlKey || e.metaKey;
   var shiftKey = e.shiftKey;
-  if (e.keyCode === xh.X_KEYCODE && ctrlKey && shiftKey) {
+  if (e.keyCode === xh.KEYCODE_Z && ctrlKey && shiftKey) {
     this.toggleBar_();
   }
+  if (e.keyCode === xh.KEYCODE_1 && ctrlKey && shiftKey) {
+    chrome.runtime.sendMessage({
+        type: 'executeTask1'
+      });
+  }
+  if (e.keyCode === xh.KEYCODE_2 && ctrlKey && shiftKey) {
+    chrome.runtime.sendMessage({
+        type: 'executeTask2'
+      });
+  }
+  if (e.keyCode === xh.KEYCODE_3 && ctrlKey && shiftKey) {
+    chrome.runtime.sendMessage({
+        type: 'executeTask3'
+      });
+  }
+    if (e.keyCode === xh.KEYCODE_4 && ctrlKey && shiftKey) {
+    chrome.runtime.sendMessage({
+        type: 'executeTask4'
+      });
+  }
+   if (e.keyCode === xh.KEYCODE_5 && ctrlKey && shiftKey) {
+    chrome.runtime.sendMessage({
+        type: 'executeTask5'
+      });
+  }
+    if (e.keyCode === xh.KEYCODE_A && ctrlKey && shiftKey) {
+    chrome.runtime.sendMessage({
+        type: 'runTask'
+      });
+  }
+
+
   // If the user just pressed Shift and they're not holding Ctrl, update query.
   // Note that we rely on the mousemove handler to have updated this.currEl_.
   // Also, note that checking e.shiftKey wouldn't work here, since Shift is the

@@ -7,15 +7,15 @@
   "tabs", "storage"
 ],
   "commands": {
-	   "_execute_browser_action": {
-	    "suggested_key": {
-	      "windows": "Ctrl+Shift+1",
-	      "mac": "Command+Shift+1",
-	      "chromeos": "Ctrl+Shift+U",
-	      "linux": "Ctrl+Shift+J"
-	    }
-	  }
-	},
+    "_execute_browser_action": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+6",
+        "mac": "Command+Shift+6",
+        "chromeos": "Ctrl+Shift+U",
+        "linux": "Ctrl+Shift+J"
+      }
+    }
+  },
   "background": {
     "page": "background.html"
   },
