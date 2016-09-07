@@ -108,7 +108,7 @@ function saveStorage(key, data) {
     // alert("save : "+obj[key][0].xPath);
 
     chrome.storage.sync.set(obj, function () {
-        console.log("key = "+key+' , data = '+data+ " is suc !");
+        console.log("save chorme storage -----------------");
         console.log(data);
     });
 }
@@ -309,15 +309,16 @@ function saveActionData() {
 
         try {
             gajTasks[gnTaskId][counterId - 2] = obj;
-            console.log(gajTasks[gnTaskId][counterId - 2]);
         }
         catch (err) {
             //초기화 안된경우에 처리해줘야한다.
             gajTasks[gnTaskId] = [];
             gajTasks[gnTaskId][gnCounter - 2] = obj;
         }
+        console.log(gajTasks[gnTaskId][counterId - 2]);
+
     }
-    console.log("save actions gajTasks : "+gnTaskId);
+    console.log("save actions gajTasks ------------------- : "+gnTaskId);
     console.log(gajTasks[gnTaskId]);
     saveStorage((TASK_KEY + gnTaskId), gajTasks[gnTaskId]);
 }
@@ -622,7 +623,7 @@ $(function () {
                 "</div>" +
                 "<div data-role='ui-field-contain' id='div_select"+ gnCounter + "' hidden>" +
                 "<label for='select-extention' class='select ui-hidden-accessible'>Select extention</label>"+
-                "<select name='select-extention' class='select-extention' id='select_extention1'>"+
+                "<select name='select-extention' class='select-extention' id='select_extention"+ gnCounter + "'>"+
                 "<option>Select Extention</option>"+
                 "<option value='TXT'>TXT</option>"+
                 "<option value='PNG'>PNG</option>"+
