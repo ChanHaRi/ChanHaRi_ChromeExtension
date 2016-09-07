@@ -251,11 +251,20 @@ def onFor(driver, xpath, contents, data, index, listFor):
     addrOfFor = int(curFor[0])
     addrOfForEnd = int(curFor[1])
 
-    for i in range(indexOfFor - 1):
+    for i in range(indexOfFor):
         for j in range(addrOfFor + 1, addrOfForEnd):
-            result = commandFunc.get(data[j]['command'])(driver, data[j]['xpath'], data[j]['contents'])
+            listLen = len(data[j]['contents'][0].split(','))
+            if listLen == 1:
+                commandFunc.get(data[j]['command'])(driver, data[j]['xpath'], data[j]['contents'])
+            else:
+                if i >= listLen:
+                    commandFunc.get(data[j]['command'])(driver, data[j]['xpath'], [data[j]['contents'][0].split(',').pop()])
+                else:
+                    commandFunc.get(data[j]['command'])(driver, data[j]['xpath'], [data[j]['contents'][0].split(',')[i]])
 
-    return "onFor"
+
+
+    return addrOfForEnd
 
 
 def onEnd(driver, xpath, contents):
@@ -339,11 +348,12 @@ def runTask(data):
         result = ""
         determineIf = 0     # 0: 판별전    1: True     2: False
         addrOfIfEnd = -1
+        addrOfForEnd = -2
 
         for index in range(len(data)):
             ### Action 수행
             if data[index]['command'] == "FOR":
-                result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index,listFor)
+                addrOfForEnd = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index,listFor)
             elif data[index]['command'] == "IF":
                 determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listIf)
                 if(determineIf == 1):   # True일 경우
@@ -388,7 +398,7 @@ def runTask(data):
             else:
                 if index == addrOfIfEnd:
                     addrOfIfEnd = -1
-                if addrOfIfEnd == -1:
+                if (addrOfIfEnd == -1) & (index > addrOfForEnd):
                     result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
 
         print("endJool <<<<<<<<<<<<<<<<<<<<<<")
