@@ -16,22 +16,10 @@ from selenium.webdriver.common.by import By
 from threading import Thread, Lock
 import threading
 
-
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 taskThreadList = []
-"""
-class taskThread(threading.Thread):
-    def __init__(self, name):
-        Thread.__init__(self)
-        self.name = name
-        self.fixed = 0
-
-    def run(self, actions):
-        runTask(actions)
-
-"""
 
 def fullpage_screenshot(driver, file):
     print("Starting chrome full page screenshot workaround ...")
@@ -129,8 +117,7 @@ def clickButton(driver, xpath, contents):
 def drawImage(driver, element, saveName):
     location = element.location
     size = element.size
-    print(location)
-    print(size)
+
     screenshotName = "Screenshot" + threading.current_thread().getName() + ".png"
     fullpage_screenshot(driver, screenshotName)
     # driver.save_screenshot('screenshot.png')
@@ -141,10 +128,6 @@ def drawImage(driver, element, saveName):
     right = location['x'] + size['width']
     bottom = location['y'] + size['height']
 
-    print(left)
-    print(top)
-    print(right)
-    print(bottom)
     im = im.crop((int(left), int(top), int(right), int(bottom)))
     im.save(saveName)
 
@@ -157,8 +140,6 @@ def drawCanvas(driver, element, saveName, canv):
 def onCrawling(driver, xpath, contents):
     splitPath = "//" + xpath.split('/')[-2] + "/" + xpath.split('/')[-1]
     imagePath = "//" + xpath.split('/')[-4] + "/" + xpath.split('/')[-3] + "/" + xpath.split('/')[-2]
-
-    # print(type(targetData))
 
     if (contents[0] == "PICKLE"):
         waitForElement(driver, splitPath)
@@ -264,7 +245,6 @@ def onIf(driver, xpath, contents, data, index, listIf):
 def onElse(driver, xpath, contents, data, index, listIf, determineIf):
     return 0
 
-
 def onFor(driver, xpath, contents, data, index, listFor):
     indexOfFor = int(data[index]['contents'][0])
     curFor = listFor.pop(0)
@@ -281,7 +261,6 @@ def onFor(driver, xpath, contents, data, index, listFor):
 def onEnd(driver, xpath, contents):
     return "onEnd"
 
-
 commandFunc = {
     "URL": connectUrl,
     "INPUT": inputText,
@@ -293,7 +272,6 @@ commandFunc = {
     "END": onEnd,
     "FOR": onFor
 }
-
 
 def runTask(data):
     #TODO   Windows, UNIX 계열이외에 예외처리 필요
@@ -413,20 +391,15 @@ def runTask(data):
                 if addrOfIfEnd == -1:
                     result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
 
-
-
         print("endJool <<<<<<<<<<<<<<<<<<<<<<")
 
     except:
         return jsonify(resultCode=1)
 
-
-
 @app.route('/_analysis_json', methods=['GET', 'OPTIONS', 'POST'])
 @cross_origin()
 def analysis_json():
     print("[analysis_json]")
-
     # data = json.dumps({})
     ###open local json file
     # if request.method == 'GET':
@@ -439,71 +412,22 @@ def analysis_json():
     try:
         data = request.get_json(force=True)
         print(data)
-        print(data["taskId"])
-        print(data["actions"])
         curTaskId = data["taskId"]
         curActions = data["actions"]
-        # data.taskId  data.actions
     except:
         return jsonify(resultCode=1)
 
     taskThread = Thread(name=curTaskId, target=runTask, args=[curActions])
     taskThreadList.append(taskThread)
     taskThread.start()
-    # taskThread.join()
-
-    # taskThreadElement = taskThread(name="taskId")
-    # taskThreadList.append(taskThreadElement)
-
-    # taskThreadElement.start(data)
-    # taskThreadElement.run(data)
-    # taskThreadElement.join()
 
     time.sleep(5)
     print("[End : analysis_json]")
     return jsonify(resultCode=1, taskId=taskThread.getName())
 
-
-@app.route('/_add_numbers', methods=['OPTIONS', 'POST'])
-@cross_origin()
-# @crossdomain(origin='*')
-def add_numbers():
-    print("[add_numbers]")
-    # print(request)
-    # print(request.args)
-    # print(request.args.get('xpath'))
-    driver = webdriver.Chrome("C:\\JoChanhee\chromedriver.exe")
-
-    driver.get("http://www.naver.com")
-
-    # if request.headers['Content-Type'] == 'application/json':
-    #     return "JSON Message: " + json.dumps(request.json)
-    # else:
-    #     return "415 Unsupported Media Type ;)"
-    # print(request.get_json(force=True))
-    data = request.get_json(force=True)
-    print(data)
-    # a = request.args.get('a', 0, type=int)
-    # b = request.args.get('b', 0, type=int)
-    # return jsonify(result=0)
-    # return jsonify(result=0)
-    return jsonify(result=0)
-
-
 @app.route('/')
 def index():
-    # driver = webdriver.Chrome("C:\\JoChanhee\chromedriver.exe")
-    # driver.get("http://www.naver.com")
-    # time.sleep(4)
-    # return 'Hello World'
-    return render_template('index.html')
-
-
-@app.route('/chanhee')
-def chanhee():
-    # return render_template('index.html')
-    return 'Hi Chanhee'
-
+    return render_template('bar.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

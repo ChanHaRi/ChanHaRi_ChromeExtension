@@ -405,6 +405,7 @@ $(function () {
 
 $(function () {
     $('button#run').bind('click', function () {
+
         //TODO last action data Save
         gnCounter += 1;//
         var command = $('select#select_command' + (gnCounter - 1)).val();
