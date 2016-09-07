@@ -41,7 +41,7 @@ var $nodeCountText = document.createTextNode('0');
 ///////////////
 var gnTaskId = 0; //현재 진행하고 있는 TaskId
 var gajTasks = [];
-
+var gURLFlag=0; // Chrome Extension에서 가져올때는 URL 이벤트를 발생 시키지 않는다.
 //Chrome Storage Key Constant
 const TASK_KEY = "TASK"; // gnTaskId
 const TASK_DATE ="TASK_DATE"; // Date per TaskID
@@ -139,6 +139,8 @@ function loadInputData() {
             $('input#input_text' + i).val(task[i - 1].inputText)
         });
         $(function () {
+            if(task[i - 1].selectCommand == "URL")
+                gURLFlag=1;
             $('select#select_command' + i).val(task[i - 1].selectCommand).change()
         });
 
@@ -471,19 +473,36 @@ $(function () {
             actions.push(obj);
         }
         console.log(actions);
-        alert("Run macro id <" + (gnTaskId) + ">");
+
+
 
         var sendData ={};
         sendData.taskId = gnTaskId; //TaskId 추가
         sendData.actions = actions; //Task에 해당하는 actions 배열 전달.
         sendData.scheduleDate= $('input#schedule_date').val();
-        var date = new Date(sendData.scheduleDate);
 
-        sendData.loopCount =$('input#loop_count').val();
         sendData.isSchedule = $('select#is_schedule').val();
+
+        if(sendData.isSchedule=="1" && sendData.scheduleDate ==''){
+            alert("Run Fail Select Date!")
+            return;
+        }
+
+
+        if($('input#loop_count').val() == '')
+        {
+            sendData.loopCount = 1;
+        }
+        else{
+            sendData.loopCount =$('input#loop_count').val();
+        }
+
+
 
         console.log("=============send data to server==================");
         console.log(sendData);
+
+        alert("Run macro id <" + (gnTaskId) + ">");
         $.ajax({
             type: "POST",
             url: "http://localhost:5000/_analysis_json",
@@ -549,7 +568,10 @@ $(function () {
             $("button.select_logic"+gnCounter).remove();//이전에 모든거지우고 새로추가
 
             if(opt == 'URL'){
-                chrome.runtime.sendMessage({type: 'getURL', results: ' '});
+                if(gURLFlag!=1)
+                    chrome.runtime.sendMessage({type: 'getURL', results: ' '});
+                else
+                    gURLFlag=0;
 
             }
             if (opt == 'CRAWLING') {
