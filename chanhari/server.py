@@ -25,6 +25,18 @@ taskThreadList = []
 
 #TODO Seongha Schduler
 
+def pendingSchedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+pendingThread = Thread(name="pendingThread", target=pendingSchedule)
+pendingThread.start()
+
+
+
+
+
 def createSchtasks(curTaskId,date):
     #schtasks /create /tn test /sc minute /mo 1 /tr "calc" //os.system 으로 실행하면 될것임.
     #MS Sch에 관한 것이다.
@@ -298,8 +310,16 @@ commandFunc = {
     "FOR": onFor
 }
 
-def runTask(data, loopCount):
-    for curLoopCount in range(loopCount):
+def runTask(args):
+    try:
+        print(args[0])
+        data = args[0]["actions"]
+        loopCount = args[0]["loopCount"]
+    except:
+        data = args["actions"]
+        loopCount = args["loopCount"]
+
+    for curLoopCount in range(int(loopCount)):
         #TODO   Windows, UNIX 계열이외에 예외처리 필요
         if os.name == "posix":      # OS가 Unix계열일 경우 (MacOS 포함)
             driver = webdriver.Chrome(os.getcwd() + "/chromedriver")
@@ -452,16 +472,30 @@ def analysis_json():
     with open('data'+str(curTaskId)+'.json', 'w') as f:
         json.dump(data, f) #저정된 데이터는 다른 python 에서 실행이된다.
 
+    print(curTaskIsSchedule)
+    print("22222222")
     # TODO Date 파싱
     #curDate 파싱해야한다.
     if(curTaskIsSchedule=="1"):
-        parsedDate = dateutil.parser.parse(curDate) #파싱된 datetime obj
-        scheduleTime = parsedDate.hour + ":" + parsedDate.minute
-        schedule.every().day.at(scheduleTime).do(runTask,args=[curActions, curLoopCount])
+        try:
+            print("Schedule Run")
+            print(curDate)
+            parsedDate = dateutil.parser.parse(curDate) #파싱된 datetime obj
+            print(parsedDate)
+            print(parsedDate.hour)
+            print(parsedDate.minute)
+            scheduleTime = str(parsedDate.hour) + ":" + str(parsedDate.minute)
+            print(scheduleTime)
+            schedule.every().day.at(scheduleTime).do(runTask,[data])
+            #schedule.every().second.do(runTask,[data])
 
-    taskThread = Thread(name=curTaskId, target=runTask, args=[curActions, curLoopCount])
-    taskThreadList.append(taskThread)
-    taskThread.start()
+        except:
+            print("Immediately Run")
+            taskThread = Thread(name=curTaskId, target=runTask, args=[data])
+            taskThreadList.append(taskThread)
+            taskThread.start()
+
+
 
     # TODO 함수로
     # 이 부분에서 스케줄 등록하는 부분을 만들도록하자.
