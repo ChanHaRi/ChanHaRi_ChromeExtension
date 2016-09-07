@@ -23,6 +23,8 @@
   border-width: 0 !important;
   position: fixed !important;
   top: 0 !important;
+  right: 0 ;
+  left: auto ;
   width: 35% !important;
   height: 1000px !important;  /* bar.css body height */
   z-index: 2147483647 !important;
