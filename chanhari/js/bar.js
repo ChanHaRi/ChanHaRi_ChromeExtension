@@ -80,6 +80,7 @@ $(function () {
 
                 $('input#schedule_date').val('');
                 $('input#loop_count').val('');
+                $('label#information1').val('');
                 // objDate["data"]= $('input#schedule_date').val();
                 // objLoopCount["data"]= $('input#loop_count').val();
 
@@ -214,6 +215,8 @@ $(function () {
                 $("button.select_logic"+gnCounter).remove();//무조건 다 지운다. 빈거이기 때문
                 $('select#select_extention1').val('Select Extention').change();//지우지못했어 css만 지웠음..
                 $('div#div_select1').hide();
+                $('label#information1').val('');
+                $('input#loop_count').val('');
             }
 
         });
@@ -468,18 +471,36 @@ $(function () {
             actions.push(obj);
         }
         console.log(actions);
-        alert("Run macro id <" + (gnTaskId) + ">");
+
+
 
         var sendData ={};
         sendData.taskId = gnTaskId; //TaskId 추가
         sendData.actions = actions; //Task에 해당하는 actions 배열 전달.
         sendData.scheduleDate= $('input#schedule_date').val();
-        var date = new Date(sendData.scheduleDate);
 
-        sendData.loopCount =$('input#loop_count').val();
+        sendData.isSchedule = $('select#is_schedule').val();
+
+        if(sendData.isSchedule=="1" && sendData.scheduleDate ==''){
+            alert("Run Fail Select Date!")
+            return;
+        }
+
+
+        if($('input#loop_count').val() == '')
+        {
+            sendData.loopCount = 1;
+        }
+        else{
+            sendData.loopCount =$('input#loop_count').val();
+        }
+
+
 
         console.log("=============send data to server==================");
         console.log(sendData);
+
+        alert("Run macro id <" + (gnTaskId) + ">");
         $.ajax({
             type: "POST",
             url: "http://localhost:5000/_analysis_json",
@@ -520,10 +541,21 @@ $(function () {
 
                 gnCounter--;
                 deleteQuery();//Data Delete
+            }else if(gnCounter == 1)
+            {
+                $('input#x_path1').val('');
+                $('input#input_text1').val('');
 
-
+                $('select#select_command1').val('Select commands').change();
+                $("button.select_logic"+gnCounter).remove();//무조건 다 지운다. 빈거이기 때문
+                $('select#select_extention1').val('Select Extention').change();//지우지못했어 css만 지웠음..
+                $('div#div_select1').hide();
+                $('label#information1').val('');
+                $('input#loop_count').val('');
+                $('input#schedule_date').val('');
 
             }
+
         });
 
         $(document).on("change", ".select-command", function (e) {
@@ -659,7 +691,7 @@ $(function () {
                 "</select>"+
                 "</div>" +
                 "<div data-role='ui-field-contain ui-block-b' >" +
-                "<label class='information'>Contents</label></div> " +
+                "<label class='information' id='information"+ gnCounter + "'>Contents</label></div> " +
                 "</div>" +
                 "</div>");
 

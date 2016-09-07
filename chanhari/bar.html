@@ -86,7 +86,7 @@
                                     </div>
 
                                     <div data-role="ui-field-contain ui-block-b">
-                                        <label class="information">Contents</label></div>
+                                        <label class="information" id="information1">Contents</label></div>
                                 </div>
                             </div>
                         </div>
@@ -114,9 +114,9 @@
                 </div>
 
                 <!-- 성하찡 수정할 곳 -->
-                <select name="slider" id="slider" data-role="slider">
-                    <option value="off">Off</option>
-                    <option value="on">On</option>
+                <select name="slider" data-role="slider" id="is_schedule">
+                    <option value="0">Off</option>
+                    <option value="1">On</option>
                 </select>
             </div>
 
@@ -129,7 +129,7 @@
 
             <!-- left right 버튼 -->
             <input type = "datetime-local" size = "15" id="schedule_date">
-            <input type = "number" min="1" max="50" placeholder = "반복횟수"size = "3" id="loop_count" >
+            <input type = "number" min="1" max="50" placeholder = "반복횟수"size = "3" id="loop_count" value = "1" >
             <div class="ui-field-contain" style="float: right;">
                 <label for="left" class="ui-hidden-accessible">Left</label>
                 <button id="left" data-theme="b" data-icon="arrow-l" data-mini="true" data-inline="true" align="right">
