@@ -101,7 +101,7 @@ def connectUrl(driver, xpath, contents):
 
 
 def inputText(driver, xpath, contents):
-    splitPath = "//" + xpath.split('/')[-1]
+    splitPath = "//" + xpath.split('/')[-2] + "/"+ xpath.split('/')[-1]
     waitForElement(driver, splitPath)
     driver.find_element_by_xpath(splitPath).send_keys(contents[0])
     return "inputText"
