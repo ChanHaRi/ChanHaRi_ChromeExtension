@@ -80,6 +80,7 @@ $(function () {
 
                 $('input#schedule_date').val('');
                 $('input#loop_count').val('');
+                $('label#information1').val('');
                 // objDate["data"]= $('input#schedule_date').val();
                 // objLoopCount["data"]= $('input#loop_count').val();
 
@@ -214,6 +215,8 @@ $(function () {
                 $("button.select_logic"+gnCounter).remove();//무조건 다 지운다. 빈거이기 때문
                 $('select#select_extention1').val('Select Extention').change();//지우지못했어 css만 지웠음..
                 $('div#div_select1').hide();
+                $('label#information1').val('');
+                $('input#loop_count').val('');
             }
 
         });
@@ -477,6 +480,7 @@ $(function () {
         var date = new Date(sendData.scheduleDate);
 
         sendData.loopCount =$('input#loop_count').val();
+        sendData.isSchedule = $('select#is_schedule').val();
 
         console.log("=============send data to server==================");
         console.log(sendData);
@@ -520,10 +524,21 @@ $(function () {
 
                 gnCounter--;
                 deleteQuery();//Data Delete
+            }else if(gnCounter == 1)
+            {
+                $('input#x_path1').val('');
+                $('input#input_text1').val('');
 
-
+                $('select#select_command1').val('Select commands').change();
+                $("button.select_logic"+gnCounter).remove();//무조건 다 지운다. 빈거이기 때문
+                $('select#select_extention1').val('Select Extention').change();//지우지못했어 css만 지웠음..
+                $('div#div_select1').hide();
+                $('label#information1').val('');
+                $('input#loop_count').val('');
+                $('input#schedule_date').val('');
 
             }
+
         });
 
         $(document).on("change", ".select-command", function (e) {
@@ -659,7 +674,7 @@ $(function () {
                 "</select>"+
                 "</div>" +
                 "<div data-role='ui-field-contain ui-block-b' >" +
-                "<label class='information'>Contents</label></div> " +
+                "<label class='information' id='information"+ gnCounter + "'>Contents</label></div> " +
                 "</div>" +
                 "</div>");
 
