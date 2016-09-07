@@ -32,21 +32,10 @@ chrome.tabs.query({'currentWindow': true,'active': true}, function (tabs) {
     tablink = tabs[0].url;
 });
 
-var cssLeft = "iframe{left:0; right:auto;}";
-var cssRight = "iframe{right:0; left:auto;}";
-var bodyBlue = "body{background-color: blue;}"
-chrome.tabs.insertCSS({code: "body{background-color: blue;}"});
 function handleRequest(request, sender, cb) {
   // Simply relay the request. This lets content.js talk to bar.js.
-     //chrome.tabs.insertCSS({code: css, allFrames: true});
    if (request.type === 'getURL') {
         request.results = sender.tab;
-   }
-   if(request.type === 'leftMove'){
-        chrome.tabs.insertCSS(sender.tab.id,{code: bodyBlue, allFrames: true});
-   }
-   if(request.type === 'rightMove'){
-        chrome.tabs.insertCSS({code: bodyBlue, allFrames: true});
    }
 
   chrome.tabs.sendMessage(sender.tab.id, request, cb);
