@@ -479,7 +479,13 @@ $(function () {
         sendData.scheduleDate= $('input#schedule_date').val();
         var date = new Date(sendData.scheduleDate);
 
-        sendData.loopCount =$('input#loop_count').val();
+        if($('input#loop_count').val() == ' ')
+        {
+            sendData.loopCount = 1;
+        }
+        else{
+            sendData.loopCount =$('input#loop_count').val();
+        }
         sendData.isSchedule = $('select#is_schedule').val();
 
         console.log("=============send data to server==================");
