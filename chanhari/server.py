@@ -15,8 +15,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from threading import Thread, Lock
 import threading
-
 import dateutil.parser
+import schedule
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -24,13 +24,6 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 taskThreadList = []
 
 #TODO Seongha Schduler
-
-def runTaskThread(curTaskId,runTask,curActions,date):
-    #TODO date를 가지고 python에서 스케줄을 조절
-
-    taskThread = Thread(name=curTaskId, target=runTask, args=[curActions])
-    taskThreadList.append(taskThread)
-    taskThread.start()
 
 def createSchtasks(curTaskId,date):
     #schtasks /create /tn test /sc minute /mo 1 /tr "calc" //os.system 으로 실행하면 될것임.
@@ -305,128 +298,129 @@ commandFunc = {
     "FOR": onFor
 }
 
-def runTask(data):
-    #TODO   Windows, UNIX 계열이외에 예외처리 필요
-    if os.name == "posix":      # OS가 Unix계열일 경우 (MacOS 포함)
-        driver = webdriver.Chrome(os.getcwd() + "/chromedriver")
-    else:                       # OS가 windows일 경우
-        driver = webdriver.Chrome("chromedriver.exe")
+def runTask(data, loopCount):
+    for curLoopCount in range(loopCount):
+        #TODO   Windows, UNIX 계열이외에 예외처리 필요
+        if os.name == "posix":      # OS가 Unix계열일 경우 (MacOS 포함)
+            driver = webdriver.Chrome(os.getcwd() + "/chromedriver")
+        else:                       # OS가 windows일 경우
+            driver = webdriver.Chrome("chromedriver.exe")
 
-    driver.maximize_window()
-    print(data)
+        driver.maximize_window()
+        print(data)
 
-    print("jool>>>>>>>>>>>")
+        print("jool>>>>>>>>>>>")
 
-    # For list
-    listFor = []
-    isList = False
+        # For list
+        listFor = []
+        isList = False
 
-    # If list
-    listIf = [[[]]]
-    isIf = False
-    isElse = False
-    ifCount = -1;
-    ifInnerCount = 0;
+        # If list
+        listIf = [[[]]]
+        isIf = False
+        isElse = False
+        ifCount = -1;
+        ifInnerCount = 0;
 
-    ### task1 pass-1        make list!
-    for index in range(len(data)):
-        tempCommand = data[index]['command']
-        if (tempCommand == "FOR"):
-            listFor.append([index, 0])
-            isList = True
-        elif (tempCommand == "IF"):
-            ifCount += 1
-            ifInnerCount = 0
-            listIf.append([])
-            listIf[ifCount].insert(ifInnerCount, ["IF", index, 0])
-            isIf = True
-        elif (tempCommand == "ELIF"):
-            ifInnerCount += 1
-            listIf[ifCount].insert(ifInnerCount, ["ELIF", index, 0])
-            isIf = True
-        elif (tempCommand == "ELSE"):
-            ifInnerCount += 1
-            listIf[ifCount].insert(ifInnerCount, ["ELSE", index, 0])
-            isElse = True
-
-        if ((tempCommand == "END") & (isList == True)):
-            isList = False
-            listFor[len(listFor) - 1][1] = index
-        elif ((tempCommand == "END") & (isIf == True)):
-            isIf = False
-            listIf[ifCount][ifInnerCount][2] = index
-        elif ((tempCommand == "END") & (isElse == True)):
-            isElse = False
-            listIf[ifCount][ifInnerCount][2] = index
-
-    print('list for >> ')
-    print(listFor)
-    print('list for << ')
-    print('list if >> ')
-    print(listIf)
-    print('list if << ')
-
-    ### Task pass-2
-    try:
-        result = ""
-        determineIf = 0     # 0: 판별전    1: True     2: False
-        addrOfIfEnd = -1
-
+        ### task1 pass-1        make list!
         for index in range(len(data)):
-            ### Action 수행
-            if data[index]['command'] == "FOR":
-                result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index,listFor)
-            elif data[index]['command'] == "IF":
-                determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listIf)
-                if(determineIf == 1):   # True일 경우
-                    listIf[0].pop(0)
-                    addrOfIfEnd = -1
-                    print("계속진행")
-                    print(listIf)
-                elif(determineIf == 2):
-                    addrOfIfEnd = listIf[0][0].pop(2)
-                    listIf[0].pop(0)
-                    print("End로 진행")
-                    print(listIf)
-            elif data[index]['command'] == "ELIF":
-                if (determineIf == 1):  # True일 경우
-                    addrOfIfEnd = listIf[0][0].pop(2)
-                    listIf[0].pop(0)
-                    print("End로 진행")
-                    print(listIf)
-                elif (determineIf == 2):
+            tempCommand = data[index]['command']
+            if (tempCommand == "FOR"):
+                listFor.append([index, 0])
+                isList = True
+            elif (tempCommand == "IF"):
+                ifCount += 1
+                ifInnerCount = 0
+                listIf.append([])
+                listIf[ifCount].insert(ifInnerCount, ["IF", index, 0])
+                isIf = True
+            elif (tempCommand == "ELIF"):
+                ifInnerCount += 1
+                listIf[ifCount].insert(ifInnerCount, ["ELIF", index, 0])
+                isIf = True
+            elif (tempCommand == "ELSE"):
+                ifInnerCount += 1
+                listIf[ifCount].insert(ifInnerCount, ["ELSE", index, 0])
+                isElse = True
+
+            if ((tempCommand == "END") & (isList == True)):
+                isList = False
+                listFor[len(listFor) - 1][1] = index
+            elif ((tempCommand == "END") & (isIf == True)):
+                isIf = False
+                listIf[ifCount][ifInnerCount][2] = index
+            elif ((tempCommand == "END") & (isElse == True)):
+                isElse = False
+                listIf[ifCount][ifInnerCount][2] = index
+
+        print('list for >> ')
+        print(listFor)
+        print('list for << ')
+        print('list if >> ')
+        print(listIf)
+        print('list if << ')
+
+        ### Task pass-2
+        try:
+            result = ""
+            determineIf = 0     # 0: 판별전    1: True     2: False
+            addrOfIfEnd = -1
+
+            for index in range(len(data)):
+                ### Action 수행
+                if data[index]['command'] == "FOR":
+                    result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index,listFor)
+                elif data[index]['command'] == "IF":
                     determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listIf)
-                    if (determineIf == 1):  # True일 경우
+                    if(determineIf == 1):   # True일 경우
                         listIf[0].pop(0)
+                        addrOfIfEnd = -1
                         print("계속진행")
                         print(listIf)
-                    elif (determineIf == 2):
+                    elif(determineIf == 2):
                         addrOfIfEnd = listIf[0][0].pop(2)
                         listIf[0].pop(0)
                         print("End로 진행")
                         print(listIf)
+                elif data[index]['command'] == "ELIF":
+                    if (determineIf == 1):  # True일 경우
+                        addrOfIfEnd = listIf[0][0].pop(2)
+                        listIf[0].pop(0)
+                        print("End로 진행")
+                        print(listIf)
+                    elif (determineIf == 2):
+                        determineIf = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listIf)
+                        if (determineIf == 1):  # True일 경우
+                            listIf[0].pop(0)
+                            print("계속진행")
+                            print(listIf)
+                        elif (determineIf == 2):
+                            addrOfIfEnd = listIf[0][0].pop(2)
+                            listIf[0].pop(0)
+                            print("End로 진행")
+                            print(listIf)
 
-            elif data[index]['command'] == "ELSE":
-                commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listIf, determineIf)
-                if (determineIf == 1):  # True일 경우
-                    addrOfIfEnd = listIf[0][0].pop(2)
-                    listIf[0].pop(0)
-                    print("End로 진행")
-                    print(listIf)
-                elif (determineIf == 2):
-                    listIf[0].pop(0)
-                    print("계속 진행")
-                    print(listIf)
-            else:
-                if index == addrOfIfEnd:
-                    addrOfIfEnd = -1
-                if addrOfIfEnd == -1:
-                    result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
+                elif data[index]['command'] == "ELSE":
+                    commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'], data, index, listIf, determineIf)
+                    if (determineIf == 1):  # True일 경우
+                        addrOfIfEnd = listIf[0][0].pop(2)
+                        listIf[0].pop(0)
+                        print("End로 진행")
+                        print(listIf)
+                    elif (determineIf == 2):
+                        listIf[0].pop(0)
+                        print("계속 진행")
+                        print(listIf)
+                else:
+                    if index == addrOfIfEnd:
+                        addrOfIfEnd = -1
+                    if addrOfIfEnd == -1:
+                        result = commandFunc.get(data[index]['command'])(driver, data[index]['xpath'], data[index]['contents'])
 
-        print("endJool <<<<<<<<<<<<<<<<<<<<<<")
+            print("endJool <<<<<<<<<<<<<<<<<<<<<<")
 
-    except:
-        return jsonify(resultCode=1)
+        except:
+            return jsonify(resultCode=1)
 
 @app.route('/_analysis_json', methods=['GET', 'OPTIONS', 'POST'])
 @cross_origin()
@@ -447,26 +441,35 @@ def analysis_json():
         curTaskId = data["taskId"]
         curActions = data["actions"]
         curDate = data["scheduleDate"]    # 'scheduleDate' 부분추가
+        curTaskIsSchedule = data["isSchedule"]
+        curLoopCount = data["loopCount"]
 
     except:
         return jsonify(resultCode=1)
 
 
     # TODO JSON 저장
-    with open('data'+curTaskId+'.json', 'w') as f:
+    with open('data'+str(curTaskId)+'.json', 'w') as f:
         json.dump(data, f) #저정된 데이터는 다른 python 에서 실행이된다.
 
     # TODO Date 파싱
     #curDate 파싱해야한다.
-    parsedDate = dateutil.parser.parse(curDate) #파싱된 datetime obj
+    if(curTaskIsSchedule=="1"):
+        parsedDate = dateutil.parser.parse(curDate) #파싱된 datetime obj
+        scheduleTime = parsedDate.hour + ":" + parsedDate.minute
+        schedule.every().day.at(scheduleTime).do(runTask,args=[curActions, curLoopCount])
+
+    taskThread = Thread(name=curTaskId, target=runTask, args=[curActions, curLoopCount])
+    taskThreadList.append(taskThread)
+    taskThread.start()
 
     # TODO 함수로
     # 이 부분에서 스케줄 등록하는 부분을 만들도록하자.
     # taskId
-    createSchtasks(curTaskId.parsedDate)
+    #createSchtasks(curTaskId.parsedDate)
 
     # TODO 함수로 변경 파라미터 이것만있으면 됨?
-    runTaskThread(curTaskId,runTask,curActions,curTaskId.parsedDate) # 이 함수는 오직 쓰레드만 돌리면 된다.
+    #runTaskThread(curTaskId,runTask,curActions,curTaskId.parsedDate) # 이 함수는 오직 쓰레드만 돌리면 된다.
 
     # TODO Delete Create json에 data가 추가가 되어야 한다.
 
