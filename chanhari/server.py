@@ -33,30 +33,9 @@ def pendingSchedule():
 pendingThread = Thread(name="pendingThread", target=pendingSchedule)
 pendingThread.start()
 
-
-
-
-
-def createSchtasks(curTaskId,date):
-    #schtasks /create /tn test /sc minute /mo 1 /tr "calc" //os.system 으로 실행하면 될것임.
-    #MS Sch에 관한 것이다.
-    #단순히 컴퓨터 켜질때 마다 실행이되도록 create를 하자.
-    #아니면 그냥 시작프로그램쪽으로 경로를 바꿔 버리는 방법도있음
-    print("curTaskId 스케줄 등록 ")
-
-#새로운 요청을 만들고 그 요청에 대해서 처리를 하는 함수다.
-def deleteSchtasks(curTaskId):
-    #MS Sch에 관한 것이다.
-    #단순히 컴퓨터 켜질때 마다 실행이되도록 create를 하자.
-    #아니면 그냥 시작프로그램쪽으로 경로를 바꿔 버리는 방법도있음
-    print("curTaskId MS 스케줄에서 제거를 한다. ")
-
-
-
-
-
-#TODO--------------------------------------
-
+#path = "server.py"
+#cmd2 =  'schtasks /create /tn chanhariServer /sc onlogon /tr '+path
+#os.system(cmd2)
 
 def fullpage_screenshot(driver, file):
     print("Starting chrome full page screenshot workaround ...")
@@ -138,7 +117,7 @@ def connectUrl(driver, xpath, contents):
 
 
 def inputText(driver, xpath, contents):
-    splitPath = "//" + xpath.split('/')[-1]
+    splitPath = "//" + xpath.split('/')[-2] + "/" + xpath.split('/')[-1]
     waitForElement(driver, splitPath)
     driver.find_element_by_xpath(splitPath).send_keys(contents[0])
     return "inputText"
@@ -485,8 +464,8 @@ def analysis_json():
     # TODO Date 파싱
     #curDate 파싱해야한다.
 
-
-    if (curTaskIsSchedule == 1):
+    print(type(curTaskIsSchedule))
+    if (curTaskIsSchedule == str(1)):
         try:
             print("Schedule Run")
             print(curDate)
@@ -520,7 +499,7 @@ def analysis_json():
 
     # TODO Delete Create json에 data가 추가가 되어야 한다.
 
-    time.sleep(5)
+    time.sleep(0.5)
     print("[End : analysis_json]")
     return jsonify(resultCode=1, taskId=curTaskId)
 

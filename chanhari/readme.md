@@ -1,4 +1,21 @@
-[ChanHaRi Extension]
+ChanHaRi Extension
+
+[Install]
+- Anaconda 4.0.4 (Python 3.5)
+
+[pip -install]
+- flask
+- selenium
+- webdriver
+- json
+- pickle
+- reportlab
+- dateutil
+- schedule
+- you-get
+
+[Configure]
+- Chrome 속성 창 대상 "\chrome.exe" 뒤에  --allow-running-insecure-content 추가
 
 [Shortcut]
 Ctrl+Shift+Z : ChanHaRi Extension on/off (background)
